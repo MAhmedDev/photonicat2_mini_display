@@ -6,8 +6,11 @@ A Go-based display driver for the Photonicat2 mini display, providing real-time 
 
 ### Build and Test
 ```bash
-# Build everything (host + cross-compilation + verify tests)
+# Build the Debian ARM64 installer binary plus the local host binary
 ./compile.sh
+
+# Install or upgrade the systemd service; this rebuilds the Debian binary first
+sudo ./install_service.sh
 
 # Run comprehensive test suite (155+ unit tests)
 ./run_tests.sh
@@ -15,8 +18,11 @@ A Go-based display driver for the Photonicat2 mini display, providing real-time 
 
 ### Run Application
 ```bash
-# After building with compile.sh cross compile on X86
-./pcat2_mini_display_openwrt #on openwrt
+# Run the deployed Debian binary
+./pcat2_mini_display_debian
+
+# Or run the local host binary produced by compile.sh
+./photonicat2_mini_display
 ```
 
 ## Sample Screen
@@ -250,13 +256,21 @@ curl -X POST -d "max_brightness=1" http://localhost:8080/api/v1/go_set_max_backl
 ## Getting Started
 
 ### Prerequisites
-- Go 1.16 or higher
+- Go 1.23 or higher
+- git
+- gcc
+- On x86_64 hosts, `gcc-aarch64-linux-gnu` to build `pcat2_mini_display_debian`
+- On aarch64 Debian hosts, native `gcc` is enough
 - Proper hardware setup for the Photonicat 2 mobile router and LCD display
 
 ```bash
-apt install gcc-aarch64-linux-gnu musl-tools
-wget https://musl.cc/aarch64-linux-musl-cross.tgz
-sudo tar -C /usr/local -xzf aarch64-linux-musl-cross.tgz
+# Debian / Ubuntu on x86_64 for the Debian ARM64 binary
+sudo apt update
+sudo apt install git gcc gcc-aarch64-linux-gnu pkg-config
+
+# Debian / Ubuntu on aarch64
+sudo apt update
+sudo apt install git gcc pkg-config
 ```
 
 ### Build & Run

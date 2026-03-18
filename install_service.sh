@@ -4,17 +4,23 @@ SERVICE_NAME=pcat2_mini_display
 BINARY_PATH=/usr/local/bin/$SERVICE_NAME
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 # Ensure running as root
 if [[ $EUID -ne 0 ]]; then
    echo "Please run as root or with sudo."
    exit 1
 fi
 
-echo "Building Go binary..."
-#./compile.sh
-
-if [ $? -ne 0 ]; then
+echo "Building Debian Go binary..."
+if ! ./compile.sh; then
   echo "Build failed. Exiting."
+  exit 1
+fi
+
+if [ ! -f pcat2_mini_display_debian ]; then
+  echo "Expected binary pcat2_mini_display_debian was not created."
   exit 1
 fi
 

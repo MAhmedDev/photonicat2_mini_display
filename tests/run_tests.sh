@@ -42,7 +42,7 @@ if ! command -v go &> /dev/null; then
         echo -e "1. On a development machine with Go installed:"
         echo -e "   ${BLUE}./compile.sh${NC}  (builds test binaries)"
         echo -e "2. Copy the appropriate test binary to this system:"
-        echo -e "   ${BLUE}scp test_runner_openwrt user@device:/${NC}"
+        echo -e "   ${BLUE}scp test_runner_debian user@device:/${NC}"
         echo -e "3. Run: ${BLUE}./run_tests_binary.sh${NC}"
         exit 1
     fi

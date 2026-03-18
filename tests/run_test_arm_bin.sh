@@ -36,10 +36,7 @@ run_binary_test_category() {
 
 # Determine which test binary to use
 TEST_BINARY=""
-if [ -f "./test_runner_openwrt" ]; then
-    TEST_BINARY="./test_runner_openwrt"
-    echo -e "${BLUE}Using OpenWRT test binary${NC}"
-elif [ -f "./test_runner_debian" ]; then
+if [ -f "./test_runner_debian" ]; then
     TEST_BINARY="./test_runner_debian"
     echo -e "${BLUE}Using Debian test binary${NC}"
 elif [ -f "./test_runner" ]; then
@@ -48,7 +45,6 @@ elif [ -f "./test_runner" ]; then
 else
     echo -e "${RED}❌ No test binary found!${NC}"
     echo -e "\n${YELLOW}Available test binaries should be:${NC}"
-    echo -e "  - test_runner_openwrt (for OpenWRT aarch64)"
     echo -e "  - test_runner_debian (for Debian aarch64)"
     echo -e "  - test_runner (for host system)"
     echo -e "\n${YELLOW}💡 Build test binaries with:${NC}"
@@ -91,8 +87,6 @@ echo "Kernel: $(uname -r)"
 echo "Test binary: $TEST_BINARY"
 if [ -f "./photonicat2_mini_display" ]; then
     echo -e "Main binary: ${GREEN}✅ photonicat2_mini_display found${NC}"
-elif [ -f "./pcat2_mini_display_openwrt" ]; then
-    echo -e "Main binary: ${GREEN}✅ pcat2_mini_display_openwrt found${NC}"
 elif [ -f "./pcat2_mini_display_debian" ]; then
     echo -e "Main binary: ${GREEN}✅ pcat2_mini_display_debian found${NC}"
 else

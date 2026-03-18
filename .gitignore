@@ -8,9 +8,9 @@ deploy.sh
 photonicat2_display
 pcat2_mini_display
 periph.io-st7789
-pcat2_mini_display_openwrt
-pcat2_mini_display_debian
+pcat2_mini_display_*
 *.gz
 *.xz
 .gitlab_token
 *.log
+photonicat2_mini_display

@@ -71,35 +71,25 @@ build:host:
     - main
     - tags
 
-# Cross-compilation build job
+# Debian ARM64 build job
 build:cross-compile:
   image: ubuntu:22.04
   stage: build
   before_script:
     # Install Go
     - apt-get update -qq
-    - apt-get install -y -qq wget git gcc pkg-config
+    - apt-get install -y -qq wget git gcc-aarch64-linux-gnu pkg-config
     - wget -q https://go.dev/dl/go${GO_VERSION}.0.linux-amd64.tar.gz
     - tar -C /usr/local -xzf go${GO_VERSION}.0.linux-amd64.tar.gz
     - export PATH=$PATH:/usr/local/go/bin
     - go version
-    # Install cross-compilation tools
-    - apt-get install -y -qq gcc-aarch64-linux-gnu
-    - wget -q https://musl.cc/aarch64-linux-musl-cross.tgz
-    - tar -C /usr/local -xzf aarch64-linux-musl-cross.tgz
-    - export PATH=/usr/local/aarch64-linux-musl-cross/bin:$PATH
     - cd $CI_PROJECT_DIR
     - go mod download
   script:
-    # Build for OpenWRT (aarch64 with musl)
-    - echo "Building for OpenWRT (aarch64)..."
-    - GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=aarch64-linux-musl-gcc go build -o pcat2_mini_display_openwrt .
-    # Build for Debian (aarch64 with glibc)
     - echo "Building for Debian (aarch64)..."
     - GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc go build -o pcat2_mini_display_debian .
   artifacts:
     paths:
-      - pcat2_mini_display_openwrt
       - pcat2_mini_display_debian
     expire_in: 1 week
   only:
@@ -127,7 +117,6 @@ package:
       
       # Copy files to package
       echo "Git version: $GIT_VERSION" > "$PACKAGE_DIR/VERSION.txt"
-      cp pcat2_mini_display_openwrt "$PACKAGE_DIR/" || echo "OpenWRT binary not found"
       cp pcat2_mini_display_debian "$PACKAGE_DIR/" || echo "Debian binary not found"
       cp config.json "$PACKAGE_DIR/" || echo "config.json not found"
       cp -r assets "$PACKAGE_DIR/" 2>/dev/null || echo "assets directory not found"

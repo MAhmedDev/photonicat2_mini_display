@@ -1,7 +1,10 @@
 #!/bin/bash
-# Compile for Debian and OpenWRT (aarch64 when on x86_64), then package both binaries
+# Compile for Debian ARM64, then build the local host binary and tests
 
 set -e
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Colors for output
 RED='\033[0;31m'
@@ -79,56 +82,28 @@ if ! check_command "git"; then
     missing_tools=1
 fi
 
-# Check cross-compilation tools for x86_64 hosts
+# Check build tools for the current host
 if [ "$HOST_ARCH" = "x86_64" ]; then
     echo -e "\n${YELLOW}3. Checking cross-compilation tools...${NC}"
-    
-    # Check for aarch64-linux-gnu-gcc (Debian cross-compiler)
+
     if ! check_command "aarch64-linux-gnu-gcc"; then
-        echo -e "${RED}aarch64-linux-gnu-gcc is required for Debian builds.${NC}"
+        echo -e "${RED}aarch64-linux-gnu-gcc is required for Debian ARM64 builds.${NC}"
         echo -e "Install with: ${BLUE}sudo apt install gcc-aarch64-linux-gnu${NC}"
         missing_tools=1
     fi
-    
-    # Check for musl cross-compiler directory
-    if ! check_directory "/usr/local/aarch64-linux-musl-cross"; then
-        echo -e "${RED}aarch64-linux-musl-cross toolchain is required for OpenWRT builds.${NC}"
-        echo -e "Install with:"
-        echo -e "  ${BLUE}wget https://musl.cc/aarch64-linux-musl-cross.tgz${NC}"
-        echo -e "  ${BLUE}sudo tar -C /usr/local -xzf aarch64-linux-musl-cross.tgz${NC}"
-        missing_tools=1
-    else
-        # Check for the specific compiler in the toolchain
-        if ! check_file "/usr/local/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc"; then
-            echo -e "${RED}aarch64-linux-musl-gcc not found in toolchain.${NC}"
-            echo -e "The toolchain may be incomplete. Try reinstalling:"
-            echo -e "  ${BLUE}sudo rm -rf /usr/local/aarch64-linux-musl-cross${NC}"
-            echo -e "  ${BLUE}wget https://musl.cc/aarch64-linux-musl-cross.tgz${NC}"
-            echo -e "  ${BLUE}sudo tar -C /usr/local -xzf aarch64-linux-musl-cross.tgz${NC}"
-            missing_tools=1
-        fi
-    fi
-    
-    # Additional tools that might be needed
-    if ! check_command "pkg-config"; then
-        echo -e "${YELLOW}pkg-config recommended for build process.${NC}"
-        echo -e "Install with: ${BLUE}sudo apt install pkg-config${NC}"
-    fi
 else
-    echo -e "\n${YELLOW}3. Native compilation mode (non-x86_64 host)${NC}"
-    
-    # Check for native gcc
+    echo -e "\n${YELLOW}3. Native compilation mode (aarch64 host)${NC}"
+
     if ! check_command "gcc"; then
         echo -e "${RED}gcc is required for native compilation.${NC}"
         echo -e "Install with: ${BLUE}sudo apt install gcc${NC}"
         missing_tools=1
     fi
-    
-    # Check for musl-gcc if available
-    if ! check_command "musl-gcc"; then
-        echo -e "${YELLOW}musl-gcc not found. OpenWRT build might fail.${NC}"
-        echo -e "Install with: ${BLUE}sudo apt install musl-tools${NC}"
-    fi
+fi
+
+if ! check_command "pkg-config"; then
+    echo -e "${YELLOW}pkg-config recommended for build process.${NC}"
+    echo -e "Install with: ${BLUE}sudo apt install pkg-config${NC}"
 fi
 
 echo -e "\n${YELLOW}4. Checking project files...${NC}"
@@ -159,9 +134,10 @@ if [ $missing_tools -eq 1 ]; then
     echo -e "${RED}❌ Missing required tools or dependencies.${NC}"
     echo -e "\n${YELLOW}Quick install for Ubuntu/Debian x86_64:${NC}"
     echo -e "${BLUE}sudo apt update${NC}"
-    echo -e "${BLUE}sudo apt install git gcc-aarch64-linux-gnu pkg-config musl-tools${NC}"
-    echo -e "${BLUE}wget https://musl.cc/aarch64-linux-musl-cross.tgz${NC}"
-    echo -e "${BLUE}sudo tar -C /usr/local -xzf aarch64-linux-musl-cross.tgz${NC}"
+    echo -e "${BLUE}sudo apt install git gcc-aarch64-linux-gnu pkg-config${NC}"
+    echo -e "\n${YELLOW}Quick install for Ubuntu/Debian aarch64:${NC}"
+    echo -e "${BLUE}sudo apt update${NC}"
+    echo -e "${BLUE}sudo apt install git gcc pkg-config${NC}"
     echo -e "\n${YELLOW}For Go installation:${NC}"
     echo -e "${BLUE}wget https://go.dev/dl/go1.21.0.linux-amd64.tar.gz${NC}"
     echo -e "${BLUE}sudo tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz${NC}"
@@ -173,53 +149,32 @@ else
     echo -e "Proceeding with build...\n"
 fi
 
-# Export PATH for musl cross-compiler
-export PATH=/usr/local/aarch64-linux-musl-cross/bin:$PATH
-
 # Get git version information
 GIT_VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "unknown")
 echo "Building version: $GIT_VERSION"
 echo "Host architecture: $HOST_ARCH"
 
 if [ "$HOST_ARCH" = "x86_64" ]; then
-    echo "→ Cross‑compiling for aarch64"
-    # when on AMD64 host, force GOARCH=arm64 and use aarch64 cross‑compilers
+    echo "→ Cross-compiling Debian ARM64 binary"
     BUILD_ENV="GOOS=linux GOARCH=arm64 CGO_ENABLED=1"
-    OPENWRT_CC="aarch64-linux-musl-gcc"
     DEBIAN_CC="aarch64-linux-gnu-gcc"
 else
-    echo "→ Native compile (host is already aarch64 or other)"
-    # on aarch64 host, default GOARCH is arm64; on others, you may adjust as needed
-    BUILD_ENV="GOOS=linux CGO_ENABLED=1"
-    OPENWRT_CC="musl-gcc"
+    echo "→ Native compile on aarch64"
+    BUILD_ENV="GOOS=linux GOARCH=arm64 CGO_ENABLED=1"
     DEBIAN_CC="gcc"
 fi
 
-# Build cross-compilation targets first if on x86_64
-if [ "$HOST_ARCH" = "x86_64" ]; then
-    echo -e "\n${YELLOW}6. Cross-compiling for target systems...${NC}"
-    
-    echo "Compiling for OpenWRT (aarch64)..."
-    env $BUILD_ENV CC=$OPENWRT_CC go build -o pcat2_mini_display_openwrt .
-    if [ $? -eq 0 ]; then
-        echo -e "  ✓ ${GREEN}OpenWRT build succeeded${NC}"
-    else
-        echo -e "  ✗ ${RED}OpenWRT build failed${NC}"
-    fi
-
-    echo "Compiling for Debian (aarch64)..."
-    env $BUILD_ENV CC=$DEBIAN_CC go build -o pcat2_mini_display_debian .
-    if [ $? -eq 0 ]; then
-        echo -e "  ✓ ${GREEN}Debian build succeeded${NC}"
-    else
-        echo -e "  ✗ ${RED}Debian build failed${NC}"
-    fi
+echo -e "\n${YELLOW}6. Building Debian ARM64 binary...${NC}"
+echo "Compiling for Debian (aarch64)..."
+env $BUILD_ENV CC=$DEBIAN_CC go build -o pcat2_mini_display_debian .
+if [ $? -eq 0 ]; then
+    echo -e "  ✓ ${GREEN}Debian build succeeded${NC}"
 else
-    echo -e "\n${YELLOW}6. Skipping cross-compilation (not on x86_64 host)${NC}"
-    echo -e "  Will build native for $HOST_ARCH"
+    echo -e "  ✗ ${RED}Debian build failed${NC}"
+    exit 1
 fi
 
-# Build for host system (x86) last
+# Build for the local host system last
 echo -e "\n${YELLOW}7. Building for host system...${NC}"
 echo "Compiling for host ($HOST_ARCH)..."
 go build -o photonicat2_mini_display .
@@ -230,69 +185,23 @@ else
     exit 1
 fi
 
-# Build tests to verify they compile and create test binary
-echo -e "\n${YELLOW}8. Building test binary for target systems...${NC}"
-
-# Build cross-compiled test binaries first if on x86_64
-if [ "$HOST_ARCH" = "x86_64" ]; then
-    echo "Compiling tests for OpenWRT (aarch64)..."
-    env $BUILD_ENV CC=$OPENWRT_CC go test -c -o test_runner_openwrt .
-    if [ $? -eq 0 ]; then
-        echo -e "  ✓ ${GREEN}OpenWRT test binary created: test_runner_openwrt${NC}"
-    else
-        echo -e "  ✗ ${RED}OpenWRT test compilation failed${NC}"
-    fi
-
-    echo "Compiling tests for Debian (aarch64)..."
-    env $BUILD_ENV CC=$DEBIAN_CC go test -c -o test_runner_debian .
-    if [ $? -eq 0 ]; then
-        echo -e "  ✓ ${GREEN}Debian test binary created: test_runner_debian${NC}"
-    else
-        echo -e "  ✗ ${RED}Debian test compilation failed${NC}"
-    fi
-fi
-
-echo "Compiling tests for host system..."
-go test -c -o test_runner .
-if [ $? -eq 0 ]; then
-    echo -e "  ✓ ${GREEN}Host test binary created: test_runner${NC}"
-else
-    echo -e "  ✗ ${RED}Test compilation failed${NC}"
-    echo -e "${YELLOW}Tests may have compilation issues. Run 'go test .' to see details.${NC}"
-fi
-
 echo -e "\n${GREEN}✅ Build process completed!${NC}"
 echo -e "\nBuilt binaries:"
-ls -la photonicat2_mini_display* test_runner* 2>/dev/null || echo "  No binaries found"
+existing_binaries=()
+for binary in photonicat2_mini_display pcat2_mini_display_debian; do
+    if [ -e "$binary" ]; then
+        existing_binaries+=("$binary")
+    fi
+done
+if [ ${#existing_binaries[@]} -gt 0 ]; then
+    ls -la "${existing_binaries[@]}"
+else
+    echo "  No binaries found"
+fi
 echo -e "\n${BLUE}Usage:${NC}"
 echo -e "  Run tests: ${YELLOW}./run_tests.sh${NC}"
 echo -e "  Run app:   ${YELLOW}./photonicat2_mini_display${NC}"
-echo -e "\n${BLUE}For OpenWRT/Debian deployment:${NC}"
-echo -e "  Copy appropriate binaries to target system:"
-echo -e "  ${YELLOW}scp pcat2_mini_display_openwrt test_runner_openwrt user@device:/${NC}"
+echo -e "\n${BLUE}For Debian deployment:${NC}"
+echo -e "  Debian install binary: ${YELLOW}pcat2_mini_display_debian${NC}"
 
-exit 0 #exit, no need to copy around for now.
-
-# Package up
-PACKAGE_DIR="pcat2_mini_display_package"
-rm -rf "$PACKAGE_DIR"
-mkdir -p "$PACKAGE_DIR"
-
-echo "Git version: $GIT_VERSION" > "$PACKAGE_DIR/VERSION.txt"
-cp pcat2_mini_display_openwrt "$PACKAGE_DIR/"
-cp pcat2_mini_display_debian "$PACKAGE_DIR/"
-cp config.json "$PACKAGE_DIR/"
-cp -ar assets "$PACKAGE_DIR/" > /dev/null 2>&1
-
-TAR_NAME="pcat2_mini_display_package_$(date +%Y%m%d-%H%M)_${GIT_VERSION}.tar.xz"
-tar cvfJ "$TAR_NAME" "$PACKAGE_DIR"
-echo "Created package: $TAR_NAME"
-
-# Clean up
-rm -rf "$PACKAGE_DIR"
-
-# If there's a deploy.sh, run it
-if [ -f deploy.sh ]; then
-    echo "Running deploy.sh..."
-    ./deploy.sh
-fi
+exit 0
