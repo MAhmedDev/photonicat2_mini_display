@@ -305,6 +305,28 @@
           "units": "",
           "units_font": "tiny",
           "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 191 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "HELP",
+          "position": { "x": 10, "y": 197 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "hello@cca.bio",
+          "position": { "x": 10, "y": 219 },
+          "font": "micro",
+          "color": [180, 220, 255],
+          "enable": 1
         }
       ],
       "page3": [
