@@ -11,17 +11,23 @@
     "elements": {
       "page0": [
         {
+          "type": "icon",
+          "icon_path": "assets/svg/wifi.svg",
+          "position": { "x": 10, "y": 5 },
+          "enable": 1
+        },
+        {
           "type": "fixed_text",
           "label": "CCA BIO",
-          "position": { "x": 10, "y": 5 },
+          "position": { "x": 40, "y": 10 },
           "font": "big",
           "color": [255, 229, 0],
           "enable": 1
         },
         {
           "type": "fixed_text",
-          "label": "SSID",
-          "position": { "x": 10, "y": 30 },
+          "label": "SSID:",
+          "position": { "x": 10, "y": 50 },
           "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
@@ -29,7 +35,7 @@
         {
           "type": "text",
           "label": "Hostname",
-          "position": { "x": 10, "y": 50 },
+          "position": { "x": 10, "y": 70 },
           "font": "huge",
           "color": [255, 229, 255],
           "data_key": "Hostname",
@@ -37,8 +43,8 @@
         },
         {
           "type": "fixed_text",
-          "label": "Password",
-          "position": { "x": 10, "y": 115 },
+          "label": "Password:",
+          "position": { "x": 10, "y": 125 },
           "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
@@ -46,7 +52,7 @@
         {
           "type": "fixed_text",
           "label": "cca_pebble",
-          "position": { "x": 10, "y": 135 },
+          "position": { "x": 10, "y": 145 },
           "font": "big",
           "color": [255, 229, 255],
           "enable": 1
@@ -54,27 +60,27 @@
         {
           "type": "fixed_text",
           "label": "HMI: http://",
-          "position": { "x": 10, "y": 195 },
-          "font": "tiny",
+          "position": { "x": 10, "y": 190 },
+          "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
         },
         {
           "type": "text",
           "label": "HMI URL",
-          "position": { "x": 102, "y": 195 },
-          "font": "tiny",
+          "position": { "x": 10, "y": 205 },
+          "font": "unit",
           "color": [255, 229, 0],
           "data_key": "Hostname",
           "units": ".local",
-          "units_font": "tiny",
+          "units_font": "unit",
           "enable": 1
         },
         {
           "type": "fixed_text",
           "label": "IP: http://192.168.4.1",
-          "position": { "x": 10, "y": 210 },
-          "font": "tiny",
+          "position": { "x": 10, "y": 230 },
+          "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
         }
