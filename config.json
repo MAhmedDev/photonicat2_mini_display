@@ -53,10 +53,21 @@
         },
         {
           "type": "fixed_text",
-          "label": "HMI: http://hostname.local",
+          "label": "HMI: http://",
           "position": { "x": 10, "y": 195 },
           "font": "tiny",
           "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "HMI URL",
+          "position": { "x": 102, "y": 195 },
+          "font": "tiny",
+          "color": [255, 229, 0],
+          "data_key": "Hostname",
+          "units": ".local",
+          "units_font": "tiny",
           "enable": 1
         },
         {
