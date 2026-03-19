@@ -224,6 +224,7 @@ func getInfoFromPcatWeb() {
 				fmt.Println("Could not unmarshal dashboard info:", err2)
 			} else {
 				// Store each field into globalData under a sensible key.
+				globalData.Store("Hostname", info.Hostname)
 				globalData.Store("BoardTemperature", info.BoardTemperature)
 				globalData.Store("Carrier", info.Carrier)
 				globalData.Store("GatewayDevice", info.Connection)

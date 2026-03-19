@@ -12,8 +12,16 @@
       "page0": [
         {
           "type": "fixed_text",
-          "label": "Device:",
-          "position": { "x": 10, "y": 10 },
+          "label": "CCA BIO",
+          "position": { "x": 10, "y": 5 },
+          "font": "big",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "SSID",
+          "position": { "x": 10, "y": 30 },
           "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
@@ -21,83 +29,42 @@
         {
           "type": "text",
           "label": "Hostname",
-          "position": { "x": 10, "y": 25 },
-          "font": "big",
+          "position": { "x": 10, "y": 50 },
+          "font": "huge",
           "color": [255, 229, 255],
           "data_key": "Hostname",
           "enable": 1
         },
         {
           "type": "fixed_text",
-          "label": "WIFI Hotspot",
-          "position": { "x": 10, "y": 55 },
+          "label": "Password",
+          "position": { "x": 10, "y": 115 },
           "font": "unit",
           "color": [255, 229, 0],
           "enable": 1
         },
         {
           "type": "fixed_text",
-          "label": "SSID:",
-          "position": { "x": 10, "y": 70 },
-          "font": "tiny",
-          "color": [255, 229, 0],
-          "enable": 1
-        },
-        {
-          "type": "text",
-          "label": "SSID Value",
-          "position": { "x": 50, "y": 70 },
-          "font": "tiny",
-          "color": [255, 229, 255],
-          "data_key": "Hostname",
-          "enable": 1
-        },
-        {
-          "type": "fixed_text",
-          "label": "Password:",
-          "position": { "x": 10, "y": 85 },
-          "font": "tiny",
-          "color": [255, 229, 0],
-          "enable": 1
-        },
-        {
-          "type": "fixed_text",
           "label": "cca_pebble",
-          "position": { "x": 60, "y": 85 },
-          "font": "tiny",
+          "position": { "x": 10, "y": 135 },
+          "font": "big",
           "color": [255, 229, 255],
           "enable": 1
         },
         {
           "type": "fixed_text",
-          "label": "HMI:",
-          "position": { "x": 10, "y": 105 },
+          "label": "HMI: http://hostname.local",
+          "position": { "x": 10, "y": 195 },
           "font": "tiny",
           "color": [255, 229, 0],
           "enable": 1
         },
         {
           "type": "fixed_text",
-          "label": "http://hostname.local",
-          "position": { "x": 10, "y": 120 },
-          "font": "tiny",
-          "color": [255, 229, 255],
-          "enable": 1
-        },
-        {
-          "type": "fixed_text",
-          "label": "IP:",
-          "position": { "x": 10, "y": 140 },
+          "label": "IP: http://192.168.4.1",
+          "position": { "x": 10, "y": 210 },
           "font": "tiny",
           "color": [255, 229, 0],
-          "enable": 1
-        },
-        {
-          "type": "fixed_text",
-          "label": "http://192.168.4.1",
-          "position": { "x": 10, "y": 155 },
-          "font": "tiny",
-          "color": [255, 229, 255],
           "enable": 1
         }
       ],
