@@ -39,6 +39,8 @@
           "font": "big",
           "color": [255, 229, 255],
           "data_key": "Hostname",
+          "units": "",
+          "units_font": "tiny",
           "enable": 1
         },
         {
@@ -84,6 +86,8 @@
           "font": "tiny",
           "color": [255, 229, 255],
           "data_key": "HMI_URL",
+          "units": "",
+          "units_font": "tiny",
           "enable": 1
         },
         {
