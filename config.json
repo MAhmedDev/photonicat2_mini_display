@@ -365,6 +365,67 @@
           "units": "",
           "units_font": "tiny",
           "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 138 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "RAM",
+          "position": { "x": 10, "y": 144 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "RAM Usage",
+          "position": { "x": 10, "y": 166 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "MemUsage",
+          "units": "GB",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 186 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "DISK",
+          "position": { "x": 10, "y": 192 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Disk Usage",
+          "position": { "x": 10, "y": 214 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "DiskUsageStr",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Disk Warning",
+          "position": { "x": 10, "y": 234 },
+          "font": "tiny",
+          "color": [255, 60, 60],
+          "data_key": "DiskWarn",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
         }
       ]
     }

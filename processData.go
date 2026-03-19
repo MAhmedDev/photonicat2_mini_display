@@ -532,8 +532,28 @@ func collectLinuxData(cfg Config) {
 	if diskData, err := getDiskUsage(); err != nil {
 		fmt.Printf("Could not get disk usage: %v\n", err)
 		globalData.Store("DiskData", nil)
+		globalData.Store("DiskUsageStr", "N/A")
+		globalData.Store("DiskWarn", "")
 	} else {
 		globalData.Store("DiskData", diskData)
+		totalMB := diskData["Total"].(uint64)
+		usedMB := diskData["Used"].(uint64)
+		var pct float64
+		if totalMB > 0 {
+			pct = float64(usedMB) / float64(totalMB) * 100
+		}
+		var diskStr string
+		if totalMB >= 1024 {
+			diskStr = fmt.Sprintf("%.0fG/%.0fG (%.0f%%)", float64(usedMB)/1024, float64(totalMB)/1024, pct)
+		} else {
+			diskStr = fmt.Sprintf("%dM/%dM (%.0f%%)", usedMB, totalMB, pct)
+		}
+		globalData.Store("DiskUsageStr", diskStr)
+		if pct > 85 {
+			globalData.Store("DiskWarn", fmt.Sprintf("! HIGH: %.0f%%", pct))
+		} else {
+			globalData.Store("DiskWarn", "")
+		}
 	}
 
 	//Fan speed
