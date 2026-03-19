@@ -107,9 +107,266 @@
           "enable": 1
         }
       ],
-      "page1": [],
-      "page2": [],
-      "page3": []
+      "page1": [
+        {
+          "type": "fixed_text",
+          "label": "NETWORK",
+          "position": { "x": 10, "y": 5 },
+          "font": "reg",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 32 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "ETH0",
+          "position": { "x": 10, "y": 38 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Eth0 IP",
+          "position": { "x": 10, "y": 60 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Net_Eth0_IP",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "ETH1",
+          "position": { "x": 10, "y": 80 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Eth1 IP",
+          "position": { "x": 10, "y": 102 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Net_Eth1_IP",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 123 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "HOTSPOT AP",
+          "position": { "x": 10, "y": 129 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Hotspot IP",
+          "position": { "x": 10, "y": 151 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Net_Hotspot_IP",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 172 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "WIFI CLIENT",
+          "position": { "x": 10, "y": 178 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "WiFi SSID",
+          "position": { "x": 10, "y": 200 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Net_WiFi_SSID",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "WiFi IP",
+          "position": { "x": 10, "y": 220 },
+          "font": "tiny",
+          "color": [180, 180, 180],
+          "data_key": "Net_WiFi_IP",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        }
+      ],
+      "page2": [
+        {
+          "type": "fixed_text",
+          "label": "PEBBLE RX",
+          "position": { "x": 10, "y": 5 },
+          "font": "reg",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 32 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "SERIAL DEV",
+          "position": { "x": 10, "y": 38 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Serial Device",
+          "position": { "x": 10, "y": 60 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Serial_Device",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 85 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "BRIDGE SVC",
+          "position": { "x": 10, "y": 91 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Bridge Status",
+          "position": { "x": 10, "y": 113 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Bridge_Status",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 138 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "TCP PORT",
+          "position": { "x": 10, "y": 144 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Port 7001",
+          "position": { "x": 10, "y": 166 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Port_7001",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        }
+      ],
+      "page3": [
+        {
+          "type": "fixed_text",
+          "label": "DOCKER",
+          "position": { "x": 10, "y": 5 },
+          "font": "reg",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 32 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "BACKEND",
+          "position": { "x": 10, "y": 38 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Backend Status",
+          "position": { "x": 10, "y": 60 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Docker_Backend",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        },
+        {
+          "type": "icon",
+          "icon_path": "assets/svg/hline.svg",
+          "position": { "x": 0, "y": 85 },
+          "enable": 1
+        },
+        {
+          "type": "fixed_text",
+          "label": "POSTGRES",
+          "position": { "x": 10, "y": 91 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
+          "type": "text",
+          "label": "Postgres Status",
+          "position": { "x": 10, "y": 113 },
+          "font": "tiny",
+          "color": [255, 255, 255],
+          "data_key": "Docker_Postgres",
+          "units": "",
+          "units_font": "tiny",
+          "enable": 1
+        }
+      ]
     }
   }
 }

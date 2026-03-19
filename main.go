@@ -699,6 +699,42 @@ func main() {
 	go collectFixedData()
 	go getSmsPages()
 
+	// Network interface / service / Docker status collectors
+	go func() {
+		collectNetworkStatusData()
+		ticker := time.NewTicker(networkGatherInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				collectNetworkStatusData()
+			case <-intervalUpdateChan:
+				ticker.Stop()
+				ticker = time.NewTicker(networkGatherInterval)
+			}
+		}
+	}()
+
+	go func() {
+		collectServiceStatus()
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		for {
+			<-ticker.C
+			collectServiceStatus()
+		}
+	}()
+
+	go func() {
+		collectDockerStatus()
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		for {
+			<-ticker.C
+			collectDockerStatus()
+		}
+	}()
+
 	// Initialize and start custom metrics manager
 	if len(cfg.CustomMetrics.Sources) > 0 {
 		var err error

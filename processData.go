@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"syscall"
@@ -224,7 +225,9 @@ func getInfoFromPcatWeb() {
 				fmt.Println("Could not unmarshal dashboard info:", err2)
 			} else {
 				// Store each field into globalData under a sensible key.
-				globalData.Store("Hostname", info.Hostname)
+				if info.Hostname != "" {
+					globalData.Store("Hostname", info.Hostname)
+				}
 				globalData.Store("BoardTemperature", info.BoardTemperature)
 				globalData.Store("Carrier", info.Carrier)
 				globalData.Store("GatewayDevice", info.Connection)
@@ -1771,4 +1774,178 @@ func getDebianWifiClients() (string, error) {
 
 	// Fallback to dummy data
 	return "DEBIAN_FALLBACK", nil
+}
+
+// collectNetworkStatusData gathers per-interface network status and IPs.
+// Stores: Net_Eth0_IP, Net_Eth1_IP, Net_Hotspot_IP, Net_WiFi_SSID, Net_WiFi_IP
+func collectNetworkStatusData() {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return
+	}
+
+	// Collect ethernet-like interface names for stable ordering
+	var ethNames []string
+	for _, iface := range ifaces {
+		name := iface.Name
+		if strings.HasPrefix(name, "end") || strings.HasPrefix(name, "eth") ||
+			strings.HasPrefix(name, "enp") || strings.HasPrefix(name, "eno") ||
+			strings.HasPrefix(name, "ens") {
+			ethNames = append(ethNames, name)
+		}
+	}
+	sort.Strings(ethNames)
+
+	// Helper: get IPv4 for an interface name
+	getIPv4 := func(name string) string {
+		iface, err := net.InterfaceByName(name)
+		if err != nil {
+			return "--"
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			return "--"
+		}
+		for _, addr := range addrs {
+			ipNet, ok := addr.(*net.IPNet)
+			if !ok {
+				continue
+			}
+			if ip4 := ipNet.IP.To4(); ip4 != nil {
+				return ip4.String()
+			}
+		}
+		return "--"
+	}
+
+	// Ethernet interfaces (first two)
+	eth0IP, eth1IP := "--", "--"
+	if len(ethNames) > 0 {
+		eth0IP = getIPv4(ethNames[0])
+	}
+	if len(ethNames) > 1 {
+		eth1IP = getIPv4(ethNames[1])
+	}
+	globalData.Store("Net_Eth0_IP", eth0IP)
+	globalData.Store("Net_Eth1_IP", eth1IP)
+
+	// Hotspot (USB WiFi dongle: wlx*) and client WiFi (wlp*)
+	hotspotIP := "--"
+	wifiSSID := "--"
+	wifiIP := "--"
+	for _, iface := range ifaces {
+		name := iface.Name
+		isUp := (iface.Flags & net.FlagUp) != 0
+
+		if strings.HasPrefix(name, "wlx") && hotspotIP == "--" {
+			if isUp {
+				if ip := getIPv4(name); ip != "--" {
+					hotspotIP = ip
+				} else {
+					hotspotIP = "UP (no IP)"
+				}
+			}
+		}
+
+		if strings.HasPrefix(name, "wlp") && wifiSSID == "--" {
+			if isUp {
+				if ip := getIPv4(name); ip != "--" {
+					wifiIP = ip
+					wifiSSID = getClientSSID(name)
+				}
+			}
+		}
+	}
+	globalData.Store("Net_Hotspot_IP", hotspotIP)
+	globalData.Store("Net_WiFi_SSID", wifiSSID)
+	globalData.Store("Net_WiFi_IP", wifiIP)
+}
+
+// getClientSSID returns the SSID of the connected WiFi network for a given interface.
+func getClientSSID(ifaceName string) string {
+	out, err := secureExecCommand("iwgetid", ifaceName, "--raw")
+	if err == nil {
+		if ssid := strings.TrimSpace(string(out)); ssid != "" {
+			return ssid
+		}
+	}
+	// Fallback: parse iw dev <iface> link
+	out, err = secureExecCommand("iw", "dev", ifaceName, "link")
+	if err == nil {
+		for _, line := range strings.Split(string(out), "\n") {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "SSID:") {
+				return strings.TrimSpace(strings.TrimPrefix(line, "SSID:"))
+			}
+		}
+	}
+	return "--"
+}
+
+// collectServiceStatus checks the pysbs-serial-bridge service, /dev/ttyACM0,
+// and whether TCP port 7001 is accepting connections.
+// Stores: Serial_Device, Bridge_Status, Port_7001
+func collectServiceStatus() {
+	// Check for serial device (ttyACM* or ttyUSB*)
+	serialCandidates := []string{"/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyUSB0"}
+	serialVal := "NOT FOUND"
+	for _, dev := range serialCandidates {
+		if _, err := os.Stat(dev); err == nil {
+			serialVal = strings.TrimPrefix(dev, "/dev/") + " OK"
+			break
+		}
+	}
+	globalData.Store("Serial_Device", serialVal)
+
+	// Check pysbs-serial-bridge systemd service
+	out, err := secureExecCommand("systemctl", "is-active", "pysbs-serial-bridge")
+	if err == nil && strings.TrimSpace(string(out)) == "active" {
+		globalData.Store("Bridge_Status", "ACTIVE")
+	} else {
+		globalData.Store("Bridge_Status", "INACTIVE")
+	}
+
+	// Check if TCP port 7001 is listening
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:7001", 500*time.Millisecond)
+	if err == nil {
+		conn.Close()
+		globalData.Store("Port_7001", "LISTENING")
+	} else {
+		globalData.Store("Port_7001", "CLOSED")
+	}
+}
+
+// collectDockerStatus checks Docker container statuses for known pysbs containers.
+// Stores: Docker_Backend, Docker_Postgres
+func collectDockerStatus() {
+	containers := []struct{ key, name string }{
+		{"Docker_Backend", "pysbs_backend"},
+		{"Docker_Postgres", "pysbs_postgres"},
+	}
+
+	for _, c := range containers {
+		// exec.Command used directly: all args are hardcoded constants, no user input
+		out, err := exec.Command("docker", "inspect", "--format", "{{.State.Status}}", c.name).Output()
+		if err != nil {
+			globalData.Store(c.key, "NOT FOUND")
+			continue
+		}
+		switch strings.TrimSpace(string(out)) {
+		case "running":
+			globalData.Store(c.key, "RUNNING")
+		case "exited":
+			globalData.Store(c.key, "STOPPED")
+		case "paused":
+			globalData.Store(c.key, "PAUSED")
+		case "restarting":
+			globalData.Store(c.key, "RESTARTING")
+		default:
+			status := strings.TrimSpace(string(out))
+			if status == "" {
+				globalData.Store(c.key, "NOT FOUND")
+			} else {
+				globalData.Store(c.key, strings.ToUpper(status))
+			}
+		}
+	}
 }
