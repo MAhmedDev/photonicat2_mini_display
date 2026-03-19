@@ -443,6 +443,14 @@ func collectFixedData() {
 	globalData.Store("Kernel", kernelDate)
 	sn, _ := getSN()
 	globalData.Store("SN", sn)
+
+	// Get hostname from OS (works on both Debian and OpenWRT).
+	// On OpenWRT, getInfoFromPcatWeb() may later override with the API value.
+	if hn, err := os.Hostname(); err == nil {
+		hostname := strings.SplitN(hn, ".", 2)[0] // strip domain suffix if FQDN
+		globalData.Store("Hostname", hostname)
+		globalData.Store("HMI_URL", "http://"+hostname+".local")
+	}
 }
 
 // collectData gathers several pieces of system and network information and stores them in globalData.
