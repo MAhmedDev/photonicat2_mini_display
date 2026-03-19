@@ -324,7 +324,7 @@
           "type": "fixed_text",
           "label": "hello@cca.bio",
           "position": { "x": 10, "y": 219 },
-          "font": "micro",
+          "font": "tiny",
           "color": [180, 220, 255],
           "enable": 1
         }
