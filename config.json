@@ -332,7 +332,7 @@
       "page3": [
         {
           "type": "fixed_text",
-          "label": "DOCKER",
+          "label": "SERVICES",
           "position": { "x": 10, "y": 5 },
           "font": "reg",
           "color": [255, 229, 0],
