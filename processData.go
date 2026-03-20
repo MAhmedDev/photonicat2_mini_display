@@ -1939,8 +1939,8 @@ func collectServiceStatus() {
 // Stores: Docker_Backend, Docker_Postgres
 func collectDockerStatus() {
 	containers := []struct{ key, name string }{
-		{"Docker_Backend", "pysbs_backend"},
-		{"Docker_Postgres", "pysbs_postgres"},
+		{"Docker_Backend", "HMI"},
+		{"Docker_Postgres", "Database"},
 	}
 
 	for _, c := range containers {

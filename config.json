@@ -346,7 +346,7 @@
         },
         {
           "type": "fixed_text",
-          "label": "BACKEND",
+          "label": "HMI",
           "position": { "x": 10, "y": 38 },
           "font": "unit",
           "color": [255, 229, 0],
@@ -354,7 +354,7 @@
         },
         {
           "type": "text",
-          "label": "Backend Status",
+          "label": "HMI Status",
           "position": { "x": 10, "y": 60 },
           "font": "tiny",
           "color": [255, 255, 255],
@@ -371,7 +371,7 @@
         },
         {
           "type": "fixed_text",
-          "label": "POSTGRES",
+          "label": "DATABASE",
           "position": { "x": 10, "y": 91 },
           "font": "unit",
           "color": [255, 229, 0],
@@ -379,7 +379,7 @@
         },
         {
           "type": "text",
-          "label": "Postgres Status",
+          "label": "Database Status",
           "position": { "x": 10, "y": 113 },
           "font": "tiny",
           "color": [255, 255, 255],
