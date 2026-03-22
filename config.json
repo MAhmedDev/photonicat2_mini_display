@@ -80,14 +80,11 @@
           "enable": 1
         },
         {
-          "type": "text",
-          "label": "HMI URL",
+          "type": "fixed_text",
+          "label": "http://pebble.local",
           "position": { "x": 10, "y": 187 },
           "font": "tiny",
           "color": [255, 229, 255],
-          "data_key": "HMI_URL",
-          "units": "",
-          "units_font": "tiny",
           "enable": 1
         },
         {
@@ -200,20 +197,36 @@
           "enable": 1
         },
         {
+          "type": "fixed_text",
+          "label": "HMI",
+          "position": { "x": 10, "y": 196 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
           "type": "text",
-          "label": "WiFi SSID",
-          "position": { "x": 10, "y": 200 },
+          "label": "HMI URL",
+          "position": { "x": 10, "y": 211 },
           "font": "tiny",
           "color": [255, 255, 255],
-          "data_key": "Net_WiFi_SSID",
+          "data_key": "HMI_URL",
           "units": "",
           "units_font": "tiny",
           "enable": 1
         },
         {
+          "type": "fixed_text",
+          "label": "IP",
+          "position": { "x": 10, "y": 226 },
+          "font": "unit",
+          "color": [255, 229, 0],
+          "enable": 1
+        },
+        {
           "type": "text",
           "label": "WiFi IP",
-          "position": { "x": 10, "y": 220 },
+          "position": { "x": 10, "y": 241 },
           "font": "tiny",
           "color": [180, 180, 180],
           "data_key": "Net_WiFi_IP",
